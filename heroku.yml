@@ -10,3 +10,8 @@ services:
 
     db:
         build: ./db
+        
+build:
+  docker:
+    web: web/Dockerfile
+    db: /db/Dockerfile
