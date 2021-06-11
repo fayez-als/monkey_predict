@@ -7,6 +7,7 @@ import subprocess
 import json
 import tensorflow as tf
 import numpy as np
+from flask_cors import CORS, cross_origin
 
 
 
@@ -14,7 +15,9 @@ import numpy as np
 
 
 app = Flask(__name__)
-api = Api(app)
+cors =CORS(app,resources={r"/upload":{"origins":"*"}})
+app.config['CORS_HEADERS']='Content-Type'
+#api = Api(app)
 
 
 
@@ -56,26 +59,32 @@ example
 predict_monkey("https://i.pinimg.com/originals/ea/1d/74/ea1d74d74a061086efb6cf5cb8bd6576.jpg")'''
 
 
+@app.route('/predict',methods=['POST'])
+@cross_origin(origin="*",headers=['Content-Type','Authorization'])
+#class Predict(Resource):
 
-
-class Predict(Resource):
-    def post(self):
+def post():
         data= request.get_json()
         url = data['url']
         prediction = predict_monkey(url)
 
         
-        return jsonify({"statues":200,"type":prediction})
+        return jsonify({"type":prediction})
+
+
+@app.route('/upload',methods=['POST'])
+@cross_origin(origin="*",headers=['Content-Type','Authorization'])
+def upload_files():
+    uploaded_file = request.files['file']
+    if uploaded_file.filename !="":
+        uploaded_file.save(uploaded_file.filename)
+    return jsonify({"result":"uploaded currectly"})
 
 
 
 
-
-
-
-
-api.add_resource(Predict,"/predict")
+#api.add_resource(Predict,"/predict")
 
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug=True,host='0.0.0.0',port=5000)

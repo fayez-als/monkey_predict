@@ -6,3 +6,4 @@ numpy
 tensorflow
 requests
 pillow
+flask_cors
